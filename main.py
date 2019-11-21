@@ -28,7 +28,7 @@ def handle_nasa_pic(message):
     d1 = datetime.strptime('6/16/1995', '%m/%d/%Y')
     d2 = datetime.strptime('11/20/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
 
-    while (True):
+    while(True):
         date = random_date(d1, d2)
 
         api_key = 'kVk83GPVbuiFjHvZl57eZXtucbF9n6k3vE2djtWh'
@@ -37,8 +37,8 @@ def handle_nasa_pic(message):
             "date": str(date.year) + "-" + str(date.month) + "-" + str(date.day)
         }
         response = requests.get("https://api.nasa.gov/planetary/apod", args)
-        if len(response.json()['explanation']) < 200: break
 
+        if len(response.json()['explanation']) <1025: break
     bot.send_photo(message.json['chat']['id'], response.json()['url'], caption=response.json()['explanation'],
                    reply_to_message_id=message.json['message_id'])
 
