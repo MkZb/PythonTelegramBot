@@ -37,7 +37,7 @@ def handle_nasa_pic(message):
             "date": str(date.year) + "-" + str(date.month) + "-" + str(date.day)
         }
         response = requests.get("https://api.nasa.gov/planetary/apod", args)
-        if response.json()['explanation'] < 200: break
+        if len(response.json()['explanation']) < 200: break
 
     bot.send_photo(message.json['chat']['id'], response.json()['url'], caption=response.json()['explanation'],
                    reply_to_message_id=message.json['message_id'])
