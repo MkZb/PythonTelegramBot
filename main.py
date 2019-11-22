@@ -22,7 +22,7 @@ def notifications():
     schedule.every().tuesday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().wednesday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().thursday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().friday.at("15:52").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")    #4:30
+    schedule.every().friday.at("15:55").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")    #4:30
     schedule.every().saturday.at("10:00").do(send_msg, ids,
                                              "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i-horosh.jpg")
     schedule.every().sunday.at("10:00").do(send_msg, ids,
