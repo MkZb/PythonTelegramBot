@@ -2,6 +2,12 @@ import telebot
 import requests
 from random import randrange
 from datetime import timedelta, datetime
+from urllib.request import urlopen
+from PIL import Image
+import random
+import io
+
+from urllib3.connectionpool import xrange
 
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
@@ -38,15 +44,38 @@ def handle_nasa_pic(message):
     bot.send_photo(message.json['chat']['id'], response.json()['url'], caption=response.json()['explanation'],
                    reply_to_message_id=message.json['message_id'])
 
+
 @bot.message_handler(commands=['meme'])
 def random_meme(message):
-    print(message)
     r = requests.get("https://meme-api.glitch.me/dank")
     bot.send_photo(message.json['chat']['id'], r.json()['meme'], reply_to_message_id=message.json['message_id'])
 
+
 @bot.message_handler(content_types=['photo'])
 def handle_docs_audio(message):
-    bot.reply_to(message, "https://i.imgur.com/ckh5qRC.jpg")
+
+    path_to_file = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + message.json['photo'][0]["file_id"]
+    file = "https://api.telegram.org/file/bot"+ TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
+    img = Image.open(urlopen(file))
+    width, height = img.size
+    BLOCKLENX = 1
+    BLOCKLENY = 1
+    xblock = width / BLOCKLENX
+    yblock = height / BLOCKLENY
+    blockmap = [(xb * BLOCKLENX, yb * BLOCKLENY, (xb + 1) * BLOCKLENX, (yb + 1) * BLOCKLENY)
+                for xb in range(int(xblock)) for yb in range(int(yblock))]
+
+    shuffle = list(blockmap)
+    random.shuffle(shuffle)
+
+    result = Image.new(img.mode, (width, height))
+    for box, sbox in zip(blockmap, shuffle):
+        c = img.crop(sbox)
+        result.paste(c, box)
+    imgByteArr = io.BytesIO()
+    result.save(imgByteArr, format='PNG')
+    imgByteArr = imgByteArr.getvalue()
+    bot.send_photo(message.json['chat']['id'], imgByteArr, reply_to_message_id=message.json['message_id'])
 
 
 @bot.message_handler(func=lambda message: True)
