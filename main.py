@@ -80,7 +80,7 @@ def handle_help(message):
                      "grid for shuffling your photo with specified grid. Just write caption in format "
                      "%NUMBER%x%NUMBER%, where %NUMBER% either an int between 0 and picture width/height (1st one "
                      "width, 2nd-height), or word min, or word max. Be careful that picture width/height meant after "
-                     "telegram comprassion. For full pixel mashup just type 'maxxmax.")
+                     "telegram comprassion. For example for full pixel mashup just type 'maxxmax.")
 
 
 @bot.message_handler(commands=['meme'])
@@ -95,41 +95,42 @@ def handle_docs_photo(message):
     file = "https://api.telegram.org/file/bot" + TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
     img = Image.open(urlopen(file))
     width, height = img.size
-    caption = message.json['caption']
-    if caption is None:
+    if 'caption' not in message.json.keys():
         X_DIV_AMOUNT = width
         Y_DIV_AMOUNT = height
-    elif re.match("(([0-9]+)|(min)|(max))x(([0-9]+)|(min)|(max))$", caption):
-        result = re.findall("(([0-9]*)|(min)|(max))x(([0-9]*)|(min)|(max))$", caption)
-        if result[0][0] == "min":
-            X_DIV_AMOUNT = 1
-        elif result[0][0] == "max":
-            X_DIV_AMOUNT = width
-        else:
-            if 1 <= int(result[0][0]) < width:
-                X_DIV_AMOUNT = int(result[0][0])
-            else:
-                bot.send_message(message.json['chat']['id'],
-                                 "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
-                                 "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
-                                 "or word max")
-                return
-        if result[0][4] == "min":
-            Y_DIV_AMOUNT = 1
-        elif result[0][4] == "max":
-            Y_DIV_AMOUNT = height
-        else:
-            if 1 <= int(result[0][4]) < width:
-                Y_DIV_AMOUNT = int(result[0][4])
-            else:
-                bot.send_message(message.json['chat']['id'],
-                                 "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
-                                 "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
-                                 "or word max")
-                return
     else:
-        X_DIV_AMOUNT = width
-        Y_DIV_AMOUNT = height
+        caption = message.json['caption']
+        if re.match("(([0-9]+)|(min)|(max))x(([0-9]+)|(min)|(max))$", caption):
+            result = re.findall("(([0-9]*)|(min)|(max))x(([0-9]*)|(min)|(max))$", caption)
+            if result[0][0] == "min":
+                X_DIV_AMOUNT = 1
+            elif result[0][0] == "max":
+                X_DIV_AMOUNT = width
+            else:
+                if 1 <= int(result[0][0]) < width:
+                    X_DIV_AMOUNT = int(result[0][0])
+                else:
+                    bot.send_message(message.json['chat']['id'],
+                                     "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
+                                     "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
+                                     "or word max")
+                    return
+            if result[0][4] == "min":
+                Y_DIV_AMOUNT = 1
+            elif result[0][4] == "max":
+                Y_DIV_AMOUNT = height
+            else:
+                if 1 <= int(result[0][4]) < width:
+                    Y_DIV_AMOUNT = int(result[0][4])
+                else:
+                    bot.send_message(message.json['chat']['id'],
+                                     "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
+                                     "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
+                                     "or word max")
+                    return
+        else:
+            X_DIV_AMOUNT = width
+            Y_DIV_AMOUNT = height
 
     BLOCKLENX = int(width / X_DIV_AMOUNT)
     BLOCKLENY = int(height / Y_DIV_AMOUNT)
