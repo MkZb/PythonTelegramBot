@@ -13,7 +13,6 @@ import threading
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
 bot = telebot.TeleBot(TOKEN)
-print(datetime.now())
 
 
 def notifications():
@@ -22,7 +21,7 @@ def notifications():
     schedule.every().tuesday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().wednesday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().thursday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().friday.at("15:55").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")    #4:30
+    schedule.every().friday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().saturday.at("10:00").do(send_msg, ids,
                                              "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i-horosh.jpg")
     schedule.every().sunday.at("10:00").do(send_msg, ids,
@@ -105,7 +104,6 @@ def echo_all(message):
     params = {
         "json": "true"
     }
-    print(message)
     if message.text.isnumeric():
         r = requests.get("http://numbersapi.com/" + message.text + "/math", params)
         bot.reply_to(message, r.json()['text'])
