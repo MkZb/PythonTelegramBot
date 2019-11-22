@@ -9,6 +9,7 @@ import random
 import io
 import schedule
 import threading
+import re
 
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
@@ -23,22 +24,25 @@ def notifications():
     schedule.every().thursday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().friday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().saturday.at("10:00").do(send_msg, ids,
-                                             "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i-horosh.jpg")
+                                             "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym"
+                                             "-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i"
+                                             "-horosh.jpg")
     schedule.every().sunday.at("10:00").do(send_msg, ids,
-                                           "https://3d-galleru.ru/cards/12/83/1cg3302a2l3qhfxs/vy-uzhe-prosnulis-togda-dobrogo-utrechka.jpg")
+                                           "https://3d-galleru.ru/cards/12/83/1cg3302a2l3qhfxs/vy-uzhe-prosnulis"
+                                           "-togda-dobrogo-utrechka.jpg")
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 
 def send_msg(ids: list, link: str):
-    for id in ids:
-        bot.send_photo(id, link)
+    for usr_id in ids:
+        bot.send_photo(usr_id, link)
 
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Welcome to my test bot. To use it simply type any number.")
+    bot.reply_to(message, "Welcome to my test bot. To see list of the available features type /help.")
 
 
 @bot.message_handler(commands=['randompicoftheday'])
@@ -52,7 +56,7 @@ def handle_nasa_pic(message):
     d1 = datetime.strptime('6/16/1995', '%m/%d/%Y')
     d2 = datetime.strptime('11/20/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
 
-    while (True):
+    while True:
         date = random_date(d1, d2)
 
         api_key = 'kVk83GPVbuiFjHvZl57eZXtucbF9n6k3vE2djtWh'
@@ -62,9 +66,21 @@ def handle_nasa_pic(message):
         }
         response = requests.get("https://api.nasa.gov/planetary/apod", args)
 
-        if len(response.json()['explanation']) < 1025: break
+        if len(response.json()['explanation']) < 1025:
+            break
     bot.send_photo(message.json['chat']['id'], response.json()['url'], caption=response.json()['explanation'],
                    reply_to_message_id=message.json['message_id'])
+
+
+@bot.message_handler(commands=['help'])
+def handle_help(message):
+    bot.send_message(message.json['chat']['id'],
+                     "1 - send any number and get interesting fact about it.\n2 - /randompicoftheday returns one of "
+                     "the featured NASA photos.\n3 - /meme returns a dunk meme picture.\n4 - send a photo and specify "
+                     "grid for shuffling your photo with specified grid. Just write caption in format "
+                     "%NUMBER%x%NUMBER%, where %NUMBER% either an int between 0 and picture width/height (1st one "
+                     "width, 2nd-height), or word min, or word max. Be careful that picture width/height meant after "
+                     "telegram comprassion. For full pixel mashup just type 'maxxmax.")
 
 
 @bot.message_handler(commands=['meme'])
@@ -74,22 +90,56 @@ def random_meme(message):
 
 
 @bot.message_handler(content_types=['photo'])
-def handle_docs_audio(message):
+def handle_docs_photo(message):
     path_to_file = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + message.json['photo'][0]["file_id"]
     file = "https://api.telegram.org/file/bot" + TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
     img = Image.open(urlopen(file))
     width, height = img.size
-    BLOCKLENX = 1
-    BLOCKLENY = 1
-    xblock = width / BLOCKLENX
-    yblock = height / BLOCKLENY
-    blockmap = [(xb * BLOCKLENX, yb * BLOCKLENY, (xb + 1) * BLOCKLENX, (yb + 1) * BLOCKLENY)
-                for xb in range(int(xblock)) for yb in range(int(yblock))]
+    caption = message.json['caption']
+    if caption is None:
+        X_DIV_AMOUNT = width
+        Y_DIV_AMOUNT = height
+    elif re.match("(([0-9]+)|(min)|(max))x(([0-9]+)|(min)|(max))$", caption):
+        result = re.findall("(([0-9]*)|(min)|(max))x(([0-9]*)|(min)|(max))$", caption)
+        if result[0][0] == "min":
+            X_DIV_AMOUNT = 1
+        elif result[0][0] == "max":
+            X_DIV_AMOUNT = width
+        else:
+            if 1 <= int(result[0][0]) < width:
+                X_DIV_AMOUNT = int(result[0][0])
+            else:
+                bot.send_message(message.json['chat']['id'],
+                                 "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
+                                 "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
+                                 "or word max")
+                return
+        if result[0][4] == "min":
+            Y_DIV_AMOUNT = 1
+        elif result[0][4] == "max":
+            Y_DIV_AMOUNT = height
+        else:
+            if 1 <= int(result[0][4]) < width:
+                Y_DIV_AMOUNT = int(result[0][4])
+            else:
+                bot.send_message(message.json['chat']['id'],
+                                 "Please enter caption in format %NUMBER%x%NUMBER%, where %NUMBER% either an int "
+                                 "between 0 and picture width/height (1st one width, 2nd-height), or word min, "
+                                 "or word max")
+                return
+    else:
+        X_DIV_AMOUNT = width
+        Y_DIV_AMOUNT = height
 
+    BLOCKLENX = int(width / X_DIV_AMOUNT)
+    BLOCKLENY = int(height / Y_DIV_AMOUNT)
+    xblock = int(width / BLOCKLENX)
+    yblock = int(height / BLOCKLENY)
+    blockmap = [(xb * BLOCKLENX, yb * BLOCKLENY, (xb + 1) * BLOCKLENX, (yb + 1) * BLOCKLENY)
+                for xb in range(xblock) for yb in range(yblock)]
     shuffle = list(blockmap)
     random.shuffle(shuffle)
-
-    result = Image.new(img.mode, (width, height))
+    result = Image.new(img.mode, (xblock * BLOCKLENX, yblock * BLOCKLENY))
     for box, sbox in zip(blockmap, shuffle):
         c = img.crop(sbox)
         result.paste(c, box)
