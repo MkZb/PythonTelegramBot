@@ -13,22 +13,28 @@ import threading
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
 bot = telebot.TeleBot(TOKEN)
+print(datetime.now())
 
 
 def notifications():
-    ids = [346024384, 443124676]
-    schedule.every().monday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().tuesday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().wednesday.at("8:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().thursday.at("8:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().friday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
-    schedule.every().saturday.at("12:00").do(bot.send_photo, ids,
+    ids = [392596821]  # 443124676,346024384
+    schedule.every().monday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().tuesday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().wednesday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().thursday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().friday.at("15:45").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")    #4:30
+    schedule.every().saturday.at("10:00").do(send_msg, ids,
                                              "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i-horosh.jpg")
-    schedule.every().sunday.at("12:00").do(bot.send_photo, ids,
+    schedule.every().sunday.at("10:00").do(send_msg, ids,
                                            "https://3d-galleru.ru/cards/12/83/1cg3302a2l3qhfxs/vy-uzhe-prosnulis-togda-dobrogo-utrechka.jpg")
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+def send_msg(ids: list, link: str):
+    for id in ids:
+        bot.send_photo(id, link)
 
 
 @bot.message_handler(commands=['start', 'help'])
