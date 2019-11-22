@@ -1,3 +1,4 @@
+import time
 import telebot
 import requests
 from random import randrange
@@ -6,12 +7,28 @@ from urllib.request import urlopen
 from PIL import Image
 import random
 import io
-
-from urllib3.connectionpool import xrange
+import schedule
+import threading
 
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
 bot = telebot.TeleBot(TOKEN)
+
+
+def notifications():
+    ids = [346024384, 443124676]
+    schedule.every().monday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().tuesday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().wednesday.at("8:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().thursday.at("8:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().friday.at("6:30").do(bot.send_photo, ids, "https://i.imgur.com/rkmDE9P.jpg")
+    schedule.every().saturday.at("12:00").do(bot.send_photo, ids,
+                                             "https://kartinki-life.ru/cards/2019/06/23/prosypaysya-sonya-s-dobrym-utrom-puskay-etot-den-budet-luchshe-chem-vchera-zhelau-udachnyh-del-i-horosh.jpg")
+    schedule.every().sunday.at("12:00").do(bot.send_photo, ids,
+                                           "https://3d-galleru.ru/cards/12/83/1cg3302a2l3qhfxs/vy-uzhe-prosnulis-togda-dobrogo-utrechka.jpg")
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -53,9 +70,8 @@ def random_meme(message):
 
 @bot.message_handler(content_types=['photo'])
 def handle_docs_audio(message):
-
     path_to_file = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + message.json['photo'][0]["file_id"]
-    file = "https://api.telegram.org/file/bot"+ TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
+    file = "https://api.telegram.org/file/bot" + TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
     img = Image.open(urlopen(file))
     width, height = img.size
     BLOCKLENX = 1
@@ -83,9 +99,18 @@ def echo_all(message):
     params = {
         "json": "true"
     }
+    print(message)
     if message.text.isnumeric():
         r = requests.get("http://numbersapi.com/" + message.text + "/math", params)
         bot.reply_to(message, r.json()['text'])
 
 
-bot.polling()
+def run_bot():
+    bot.polling()
+
+
+if __name__ == '__main__':
+    t1 = threading.Thread(target=run_bot)
+    t2 = threading.Thread(target=notifications)
+    t1.start()
+    t2.start()
