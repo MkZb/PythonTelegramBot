@@ -12,7 +12,7 @@ from urllib3.connectionpool import xrange
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
 bot = telebot.TeleBot(TOKEN)
-
+print(datetime.now())
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
