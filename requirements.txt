@@ -2,8 +2,10 @@ django-scheduler
 certifi==2019.9.11
 chardet==3.0.4
 idna==2.8
-requests==2.22.0
+Pillow==6.2.1
 pyTelegramBotAPI==3.6.6
+requests==2.22.0
 six==1.13.0
+telebot==0.0.3
 urllib3==1.25.7
 virtualenv==16.7.7
