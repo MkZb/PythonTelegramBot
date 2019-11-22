@@ -16,7 +16,7 @@ bot = telebot.TeleBot(TOKEN)
 
 
 def notifications():
-    ids = [392596821]  # 443124676,346024384
+    ids = [392596821, 443124676, 346024384]  # 443124676,346024384
     schedule.every().monday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().tuesday.at("04:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
     schedule.every().wednesday.at("06:30").do(send_msg, ids, "https://i.imgur.com/rkmDE9P.jpg")
