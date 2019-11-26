@@ -156,6 +156,7 @@ def handle_docs_photo(message):
 def echo_sound(message):
     path_to_file = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + message.json['voice']["file_id"]
     file = "https://api.telegram.org/file/bot" + TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
+    print(file)
     with open("./data/sample.oga", "wb") as f:
         f.write(urlopen(file).read())
     ogg_version = pydub.AudioSegment.from_ogg("./data/sample.oga")
