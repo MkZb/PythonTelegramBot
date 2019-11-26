@@ -10,7 +10,7 @@ import io
 import schedule
 import threading
 import re
-import pydub
+#import pydub
 
 TOKEN = "1002176547:AAEnJt0ZVYhoTARB-5wDCT38OC0hhhMWfmk"
 
@@ -152,7 +152,7 @@ def handle_docs_photo(message):
     bot.send_photo(message.json['chat']['id'], imgByteArr, reply_to_message_id=message.json['message_id'])
 
 
-@bot.message_handler(content_types=['voice'])
+"""@bot.message_handler(content_types=['voice'])
 def echo_sound(message):
     path_to_file = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + message.json['voice']["file_id"]
     file = "https://api.telegram.org/file/bot" + TOKEN + "/" + requests.get(path_to_file).json()['result']['file_path']
@@ -161,7 +161,7 @@ def echo_sound(message):
     ogg_version = pydub.AudioSegment.from_ogg("./data/sample.oga")
     ogg_version.reverse().export("./data/result.oga", format="ogg")
     with open("./data/result.oga", "rb") as f:
-        bot.send_voice(message.json['chat']['id'], f.read())
+        bot.send_voice(message.json['chat']['id'], f.read())"""
 
 
 @bot.message_handler(func=lambda message: True)
